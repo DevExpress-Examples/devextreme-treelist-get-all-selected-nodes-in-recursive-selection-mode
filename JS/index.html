@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>DevExtreme jQuery Example</title>
+    <link rel="stylesheet" type="text/css" href="css/dx.common.css" />
+	<link rel="stylesheet" type="text/css" href="css/dx.light.css" />
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="js/dx.all.js"></script>
+	<script type="text/javascript" src="data.js"></script>
+		<style>
+			#selectedKeys {
+				padding: 40px;
+				margin-top: 20px;
+				background-color: rgba(191, 191, 191, 0.15);
+			}
+		</style>
+    </head>
+
+    <body>
+        <div id="treelist"></div>
+        <div id="button"></div>
+        <div id="selectedKeys"></div>
+
+        <script>
+            $(function() {
+                var getAllSelectedNodes = function(treeListInstance, parentKeys, skipParent) {
+                    var result = [];
+
+                    parentKeys.forEach(function(key) {
+                        var insertIndex = result.length,
+                            node = treeListInstance.getNodeByKey(key),
+							parentNode = node.parent,
+                            childKeys = node.children.map(function(child) {
+                                return child.key;
+                            });
+
+                        while(parentNode.level >= 0 && !skipParent) {
+                            if(result.filter(function(nodeItem) { return nodeItem.key === parentNode.key }).length === 0 && treeListInstance.isRowSelected(parentNode.key)) {
+                                result.splice(insertIndex, 0, parentNode);
+                                parentNode = parentNode.parent;
+                            } else {
+                                break;
+                            }
+                        }
+
+                        result.push(node);
+                        result = result.concat(getAllSelectedNodes(treeListInstance, childKeys, true));
+                    });
+
+                    return result;
+                };
+
+                $("#treelist").dxTreeList({
+                    height: 500,
+                    dataSource: employees,
+                    keyExpr: "ID",
+                    parentIdExpr: "Head_ID",
+                    showRowLines: true,
+                    selection: {
+                        mode: "multiple",
+                        recursive: true
+                    },
+                    columns: ["Full_Name", {
+                            dataField: "Title",
+                            caption: "Position"
+                        }, "City", "State",
+                        {
+                            dataField: "Hire_Date",
+                            dataType: "date",
+                            width: 120
+                        }
+                    ],
+                    expandedRowKeys: [1, 2, 10]
+                });
+
+                $("#button").dxButton({
+                    text: "Get all selected keys",
+                    onClick: function() {
+                        var treeListInstance = $("#treelist").dxTreeList("instance"),
+                            selectedRowKeys = treeListInstance.getSelectedRowKeys();
+
+                        $("#selectedKeys").text("Selected row keys: " + getAllSelectedNodes(treeListInstance, selectedRowKeys)
+							.map(function(node) { 
+								return node.data["Full_Name"]; 
+							}).join(", "));
+                    },
+                });
+            });
+        </script>
+    </body>
+    </html>
