@@ -18,7 +18,7 @@
 ## Files to Review
 
 - **JS**
-  - [index.js](JS/index.js)
+  - [index.html](JS/index.html)
 
 ## Documentation
 
