@@ -9,9 +9,6 @@
 <p>This example demonstrates how to obtain selected TreeList keys on demand. Click the "Get all selected keys" button to see the result.</p>
 <p>Check the getAllSelectedNodes function to see how to collect selected nodes.</p>
 
-<!-- run online -->
-**[[Run Online]](https://codecentral.devexpress.com/128584164/)**
-<!-- run online end -->
 
 <div align="center"><img alt="" src="treelist-selection-mode.png" /></div>
 
