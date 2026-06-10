@@ -5,3 +5,9 @@
 body {
     margin: 8px;
 }
+
+#selected-keys {
+    padding: 40px;
+    margin-top: 20px;
+    background-color: rgb(191 191 191 / 15%);
+}

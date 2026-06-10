@@ -1,29 +1,65 @@
 @using ASP_NET_Core.Models
+@model IEnumerable<Employee>
 
-<h2>Home</h2>
+<script>
+    function getAllSelectedNodes(treeListInstance, parentKeys, skipParent) {
+        let result = [];
 
-@(Html.DevExtreme().DataGrid<SampleOrder>()
-    .ShowBorders(true)
-    .DataSource(d => d.Mvc().Controller("SampleData").LoadAction("Get").Key("OrderID"))
+        parentKeys.forEach((key) => {
+            const insertIndex = result.length;
+            const node = treeListInstance.getNodeByKey(key);
+            let parentNode = node.parent;
+            const childKeys = node.children.map((child) => child.key);
+
+            while (parentNode.level >= 0 && !skipParent) {
+                const isCollected = result.some((nodeItem) => nodeItem.key === parentNode.key);
+                if (!isCollected && treeListInstance.isRowSelected(parentNode.key)) {
+                    result.splice(insertIndex, 0, parentNode);
+                    parentNode = parentNode.parent;
+                } else {
+                    break;
+                }
+            }
+
+            result.push(node);
+            result = result.concat(getAllSelectedNodes(treeListInstance, childKeys, true));
+        });
+
+        return result;
+    }
+
+    function onButtonClick() {
+        const treeList = $("#treelist").dxTreeList("instance");
+        const selectedRowKeys = treeList.getSelectedRowKeys();
+        const names = getAllSelectedNodes(treeList, selectedRowKeys)
+            .map((node) => node.data.Full_Name)
+            .join(", ");
+
+        $("#selected-keys").text(`Selected row keys: ${names}`);
+    }
+</script>
+
+@(Html.DevExtreme().TreeList<Employee>()
+    .ID("treelist")
+    .DataSource(Model)
+    .Height(500)
+    .KeyExpr("ID")
+    .ParentIdExpr("Head_ID")
+    .ShowRowLines(true)
+    .Selection(s => s.Mode(SelectionMode.Multiple).Recursive(true))
     .Columns(columns => {
-        columns.AddFor(m => m.OrderID);
-        columns.AddFor(m => m.OrderDate);
-        columns.AddFor(m => m.CustomerName);
-        columns.AddFor(m => m.ShipCountry);
-        columns.AddFor(m => m.ShipCity);
+        columns.Add().DataField("Full_Name");
+        columns.Add().DataField("Title").Caption("Position");
+        columns.Add().DataField("City");
+        columns.Add().DataField("State");
+        columns.Add().DataField("Hire_Date").DataType(GridColumnDataType.Date).Width(120);
     })
-    .Paging(p => p.PageSize(10))
-    .FilterRow(f => f.Visible(true))
-    .HeaderFilter(f => f.Visible(true))
-    .GroupPanel(p => p.Visible(true))
-    .Grouping(g => g.AutoExpandAll(false))
-    .RemoteOperations(true)
-    .Summary(s => s
-        .TotalItems(totalItems => {
-            totalItems.AddFor(m => m.ShipCity).SummaryType(SummaryType.Count);
-        })
-        .GroupItems(groupItems => {
-            groupItems.Add().SummaryType(SummaryType.Count);
-        })
-    )
+    .ExpandedRowKeys(new[] { 1, 2, 10 })
 )
+
+@(Html.DevExtreme().Button()
+    .Text("Get all selected keys")
+    .OnClick("onButtonClick")
+)
+
+<div id="selected-keys"></div>
