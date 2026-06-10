@@ -2,3 +2,9 @@
   margin: 50px;
   width: 90vw;
 }
+
+#selected-keys {
+  padding: 40px;
+  margin-top: 20px;
+  background-color: rgb(191 191 191 / 15%);
+}
