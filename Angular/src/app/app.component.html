@@ -1,3 +1,26 @@
 <div class="default-style">
-  <dx-button [text]="buttonText" (onClick)="onClick($event)"></dx-button>
+  <dx-tree-list
+    [dataSource]="employees"
+    [height]="500"
+    keyExpr="ID"
+    parentIdExpr="Head_ID"
+    [showRowLines]="true"
+    [expandedRowKeys]="expandedRowKeys"
+  >
+    <dxo-selection mode="multiple" [recursive]="true"></dxo-selection>
+    <dxi-column dataField="Full_Name"></dxi-column>
+    <dxi-column dataField="Title" caption="Position"></dxi-column>
+    <dxi-column dataField="City"></dxi-column>
+    <dxi-column dataField="State"></dxi-column>
+    <dxi-column
+      dataField="Hire_Date"
+      dataType="date"
+      [width]="120"
+    ></dxi-column>
+  </dx-tree-list>
+  <dx-button
+    text="Get all selected keys"
+    (onClick)="onButtonClick()"
+  ></dx-button>
+  <div id="selected-keys">{{ selectedText }}</div>
 </div>
