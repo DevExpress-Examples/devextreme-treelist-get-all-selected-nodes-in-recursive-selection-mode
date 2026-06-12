@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { DxButtonModule } from 'devextreme-angular/ui/button';
 import { DxTreeListComponent, DxTreeListModule } from 'devextreme-angular/ui/tree-list';
 import dxTreeList from 'devextreme/ui/tree_list';
@@ -11,6 +11,7 @@ type EmployeeNode = Node<Employee, number>;
     selector: 'app-root',
     imports: [DxTreeListModule, DxButtonModule],
     templateUrl: './app.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
